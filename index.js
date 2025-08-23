@@ -9,9 +9,13 @@ app.use(express.json());
 // Koneksi MySQL (gunakan env vars nanti)
 const db = mysql.createConnection({
   host: process.env.MYSQLHOST,
+  port: process.env.MYSQLPORT,
   user: process.env.MYSQLUSER,
   password: process.env.MYSQLPASSWORD,
-  database: process.env.MYSQLDATABASE
+  database: process.env.MYSQLDATABASE,
+  ssl: {
+    rejectUnauthorized: true // Penting untuk koneksi via proxy Railway
+  }
 });
 
 db.connect(err => {
