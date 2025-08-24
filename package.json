@@ -12,7 +12,16 @@
   "type": "commonjs",
   "dependencies": {
     "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "mysql2": "^3.14.3"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rusliahmadi/aziziyah-back.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Rusliahmadi/aziziyah-back/issues"
+  },
+  "homepage": "https://github.com/Rusliahmadi/aziziyah-back#readme"
 }
