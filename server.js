@@ -9,6 +9,9 @@ dotenv.config();
 const app = express();
 app.use(cors({
   origin: 'https://rusliahmadi.github.io'
+  credentials: true
+}));
+
 }));
 app.use(express.json());
 
