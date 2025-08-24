@@ -1,35 +1,37 @@
 const express = require('express');
-const mysql = require('mysql2');
 const cors = require('cors');
-const app = express();
+const db = require('./config/db');
+require('dotenv').config();
 
+const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Koneksi MySQL (gunakan env vars nanti)
-const mysql = require('mysql2');
-const db = mysql.createConnection({
-  host: process.env.MYSQLHOST,
-  port: process.env.MYSQLPORT || 3306,
-  user: process.env.MYSQLUSER,
-  password: process.env.MYSQLPASSWORD,
-  database: process.env.MYSQLDATABASE
+// API endpoints
+app.get('/api/santri', async (req, res) => {
+  const [rows] = await db.query('SELECT * FROM santri');
+  res.json(rows);
 });
 
-
-db.connect(err => {
-  if (err) console.error('❌ DB Connection Error:', err);
-  else console.log('✅ Connected to MySQL!');
+app.get('/api/materi', async (req, res) => {
+  const [rows] = await db.query('SELECT * FROM materi');
+  res.json(rows);
 });
 
-app.get('/santri', (req, res) => {
-  db.query('SELECT * FROM santri', (err, results) => {
-    if (err) res.status(500).json(err);
-    else res.json(results);
-  });
+app.get('/api/rekap-materi', async (req, res) => {
+  const [rows] = await db.query('SELECT * FROM rekap_materi');
+  res.json(rows);
+});
+
+app.get('/api/absen', async (req, res) => {
+  const { kelas, sesi, dari, sampai } = req.query;
+  let q = 'SELECT * FROM absen WHERE tanggal BETWEEN ? AND ?';
+  const params = [dari, sampai];
+  if (kelas) { q += ' AND kelas = ?'; params.push(kelas); }
+  if (sesi) { q += ' AND sesi = ?'; params.push(sesi); }
+  const [rows] = await db.query(q, params);
+  res.json(rows);
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`API berjalan di http://localhost:${PORT}`));
