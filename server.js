@@ -4,19 +4,22 @@ const cors = require('cors');
 const mysql = require('mysql2/promise');
 const dotenv = require('dotenv');
 
+// Load environment variables
 dotenv.config();
 
 const app = express();
+
+// Middleware
 app.use(cors({
   origin: 'https://rusliahmadi.github.io',
   credentials: true
 }));
-
 app.use(express.json());
 
+// MySQL connection pool
 const pool = mysql.createPool({
   host: process.env.MYSQLHOST,
-  port: process.env.MYSQLPORT,
+  port: parseInt(process.env.MYSQLPORT, 10), // Pastikan port jadi angka
   user: process.env.MYSQLUSER,
   password: process.env.MYSQLPASSWORD,
   database: process.env.MYSQLDATABASE,
@@ -24,6 +27,19 @@ const pool = mysql.createPool({
   connectionLimit: 10,
   queueLimit: 0
 });
+
+// Cek koneksi DB saat server start
+(async () => {
+  try {
+    const connection = await pool.getConnection();
+    console.log('✅ Connected to MySQL database');
+    connection.release();
+  } catch (err) {
+    console.error('❌ Failed to connect to MySQL:', err.message);
+  }
+})();
+
+// Routes
 
 // GET all santri aktif
 app.get('/api/santri', async (req, res) => {
@@ -88,8 +104,8 @@ app.delete('/api/santri/:id', async (req, res) => {
   }
 });
 
+// Start server
 const port = process.env.PORT || 3000;
-app.listen(port, "0.0.0.0", () => {
-  console.log(`Server running on port ${port}`);
+app.listen(port, '0.0.0.0', () => {
+  console.log(`🚀 Server running on port ${port}`);
 });
-
